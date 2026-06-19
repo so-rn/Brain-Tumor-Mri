@@ -14,7 +14,7 @@ brain_tumor*/
 # Run artifacts
 *.log
 
-# Claude Code worktrees / skills
+# Local tooling / editor scratch
 .claude/
 
 # Python
