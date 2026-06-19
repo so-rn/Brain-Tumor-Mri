@@ -1,35 +1,54 @@
 # Brain Tumor MRI Classifier — Streamlit App
 
-A simple web app: upload a brain MRI image and the fine-tuned **ResNet50** model
-predicts one of `glioma`, `meningioma`, `notumor`, `pituitary`, with a **Grad-CAM**
-heatmap showing where the model looked.
+A professional, multi-page web app around a fine-tuned **ResNet50** that
+classifies a brain MRI into `glioma`, `meningioma`, `notumor`, or `pituitary`.
 
-## 1. Export the model from the notebook (Colab)
+**Pages**
+- **🔬 Analysis** — upload a scan → predicted class, confidence, per-class
+  probabilities, and a **Grad-CAM** heatmap of where the model looked.
+- **📊 Model Dashboard** — the model's real test-set performance (accuracy,
+  macro-F1, per-class precision/recall/F1, confusion matrix), read from
+  `model_metrics.json`.
+- **ℹ️ About** — method, data, and disclaimer.
 
-After the notebook finishes training, the fine-tuned ResNet50 is already saved as
-`ResNet50_finetuned.keras` (by the `ModelCheckpoint` callback). Download it:
+## 1. The model
 
-```python
-from google.colab import files
-files.download('ResNet50_finetuned.keras')
-```
+The trained model `ResNet50_finetuned.keras` and its `model_metrics.json` are
+**included in this repo**, so you can skip straight to step 2.
 
-Put that file in the **same folder as `app.py`**.
-
-## 2. Install & run (on your computer)
+To **retrain from scratch** (only needed if you want to reproduce the model):
 
 ```bash
 pip install -r requirements.txt
+gdown 1bXBSfKDaItFigHa5QfcnyTXADG2wlWJj -O brain_tumor.zip   # the dataset (not committed)
+unzip -q -o brain_tumor.zip                                  # -> Training/ Testing/
+python train_model.py                                        # rewrites model + metrics
+```
+
+`train_model.py` freezes ResNet50, extracts features once (CPU-friendly), trains
+a classification head, evaluates on the held-out `Testing/` set, and writes both
+`ResNet50_finetuned.keras` and `model_metrics.json`. Reference run:
+**~93% test accuracy / ~93% macro-F1** in a few minutes on CPU.
+
+Or drop in your own trained `ResNet50_finetuned.keras` next to `app.py`.
+
+## 2. Run
+
+```bash
+./run_app.sh            # recommended (sets the protobuf env var, then runs streamlit)
+# or:
 streamlit run app.py
 ```
 
-The app opens in your browser. Upload an MRI scan and you get the prediction,
-per-class probabilities, and the Grad-CAM overlay.
+Opens in your browser. (On TF 2.21 / anaconda you may need
+`PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python` to avoid a protobuf segfault —
+`run_app.sh` sets it for you.)
 
 ## Notes
 
-- The model contains its own preprocessing, so the app just resizes images to
-  128×128 — no manual normalization.
+- **Preprocessing** lives in the app: it applies ResNet `preprocess_input`
+  before inference (and before Grad-CAM); the saved model does not preprocess
+  internally. Keep that contract if you retrain.
 - If the model file has a different name/location, set the path in the sidebar.
-- **Research/educational use only.** This is not a medical device and must not be
-  used for real diagnosis.
+- **Research / educational use only.** This is not a medical device and must not
+  be used for real diagnosis.

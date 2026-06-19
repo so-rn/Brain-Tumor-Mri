@@ -1,5 +1,6 @@
 streamlit>=1.32
 tensorflow>=2.15
+scikit-learn
 numpy
 pillow
 matplotlib

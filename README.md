@@ -32,21 +32,40 @@ See `Brain_Tumor_Detector_Solution_HighAccuracy.ipynb` for the full pipeline.
 
 ## App
 
-A Streamlit app (`app.py`) lets you upload an MRI scan and get the predicted class,
-per-class probabilities, and a Grad-CAM heatmap.
+A professional, multi-page Streamlit app (`app.py`):
+
+- **Analysis** — upload an MRI scan → predicted class, per-class probabilities
+  (bars coloured by tumor risk: green → yellow → orange → red), and a Grad-CAM
+  heatmap.
+- **Model Dashboard** — real test-set metrics (accuracy, macro-F1, per-class
+  scores, confusion matrix) from `model_metrics.json`.
+- **About** — method, data, disclaimer.
+
+The trained model (`ResNet50_finetuned.keras`) and its metrics
+(`model_metrics.json`) are **included in this repo**, so the app runs right away
+— no training or dataset download required:
 
 ```bash
 pip install -r requirements.txt
-# place ResNet50_finetuned.keras (exported from the notebook) next to app.py
-streamlit run app.py
+./run_app.sh            # recommended launcher (sets the protobuf env var)
+# or: streamlit run app.py
 ```
 
-See `README_app.md` for details.
+To **retrain from scratch** (downloads the dataset, rewrites model + metrics):
+
+```bash
+gdown 1bXBSfKDaItFigHa5QfcnyTXADG2wlWJj -O brain_tumor.zip && unzip -q -o brain_tumor.zip
+python train_model.py
+```
+
+`train_model.py` reproduces a deployable model on CPU in a few minutes
+(~93% test accuracy). See `README_app.md` for details.
 
 ## Dataset
 
-Brain Tumor MRI Dataset (4 classes). The model file and dataset are not committed
-(see `.gitignore`) — export the trained model from the notebook before running the app.
+Brain Tumor MRI Dataset (4 classes). The **dataset is not committed** (see
+`.gitignore`) — download it with the `gdown` command above only if you want to
+retrain. The trained model needed to run the app is already in the repo.
 
 ## Disclaimer
 

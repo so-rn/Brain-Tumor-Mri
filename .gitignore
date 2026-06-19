@@ -1,14 +1,21 @@
-# Models & checkpoints (too large for git)
-*.keras
+# Intermediate checkpoints (the deployable model ResNet50_finetuned.keras IS committed)
 *.h5
 *.weights.h5
 
-# Datasets / archives
+# Datasets / archives (downloaded via gdown, see README)
 *.zip
 Training/
 Testing/
+Training
+Testing
 brain_tumor*/
 *-dataset/
+
+# Run artifacts
+*.log
+
+# Claude Code worktrees / skills
+.claude/
 
 # Python
 __pycache__/
