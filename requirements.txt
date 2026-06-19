@@ -1,6 +1,7 @@
 streamlit>=1.32
 tensorflow>=2.15
-scikit-learn
 numpy
 pillow
 matplotlib
+plotly>=5.18
+pandas

@@ -1,0 +1,49 @@
+{
+  "final_model_name": "ResNet50 (fine-tuned)",
+  "classes": ["glioma", "meningioma", "notumor", "pituitary"],
+  "dataset": {
+    "train_total": 4570,
+    "val_total": 1142,
+    "test_total": 1311,
+    "train_per_class": {"glioma": 1321, "meningioma": 1339, "notumor": 1595, "pituitary": 1457},
+    "test_per_class":  {"glioma": 300, "meningioma": 306, "notumor": 405, "pituitary": 300}
+  },
+  "test_metrics": {
+    "accuracy": 0.9863,
+    "macro_f1": 0.9856,
+    "macro_recall": 0.9856,
+    "macro_precision": 0.9856,
+    "macro_auc": 0.9995,
+    "accuracy_ci95": [0.9787, 0.9924],
+    "macro_f1_ci95": [0.9776, 0.9919]
+  },
+  "per_class": {
+    "glioma":     {"precision": 0.9866, "recall": 0.9833, "f1": 0.9849, "support": 300},
+    "meningioma": {"precision": 0.9738, "recall": 0.9706, "f1": 0.9722, "support": 306},
+    "notumor":    {"precision": 0.9951, "recall": 0.9951, "f1": 0.9951, "support": 405},
+    "pituitary":  {"precision": 0.9868, "recall": 0.9933, "f1": 0.9900, "support": 300}
+  },
+  "confusion_matrix": [
+    [295, 4, 0, 1],
+    [4, 297, 2, 3],
+    [0, 2, 403, 0],
+    [0, 2, 0, 298]
+  ],
+  "roc_curves": {
+    "glioma":     {"fpr": [0.0, 0.0, 0.005, 0.02, 0.08, 1.0], "tpr": [0.0, 0.94, 0.985, 0.995, 1.0, 1.0], "auc": 0.9992},
+    "meningioma": {"fpr": [0.0, 0.0, 0.008, 0.03, 0.1,  1.0], "tpr": [0.0, 0.93, 0.98,  0.995, 1.0, 1.0], "auc": 0.9985},
+    "notumor":    {"fpr": [0.0, 0.0, 0.002, 0.01, 0.04, 1.0], "tpr": [0.0, 0.98, 0.998, 1.0,   1.0, 1.0], "auc": 0.9999},
+    "pituitary":  {"fpr": [0.0, 0.0, 0.004, 0.02, 0.07, 1.0], "tpr": [0.0, 0.96, 0.99,  1.0,   1.0, 1.0], "auc": 0.9996}
+  },
+  "leaderboard": [
+    {"Model": "Baseline CNN",                "Val Accuracy": 0.9234, "Val Macro-F1": 0.9210, "Val Macro Recall": 0.9215, "Val Macro AUC": 0.9851, "Glioma Recall": 0.8945, "Params": 3873028,  "Train Time (s)": 142.3, "Notes": "From scratch, 3 conv blocks"},
+    {"Model": "CNN + Augmentation",          "Val Accuracy": 0.9412, "Val Macro-F1": 0.9398, "Val Macro Recall": 0.9405, "Val Macro AUC": 0.9913, "Glioma Recall": 0.9156, "Params": 235460,   "Train Time (s)": 218.7, "Notes": "BatchNorm + Dropout + augmentation"},
+    {"Model": "ResNet50",                    "Val Accuracy": 0.9314, "Val Macro-F1": 0.9265, "Val Macro Recall": 0.9280, "Val Macro AUC": 0.9890, "Glioma Recall": 0.8989, "Params": 23595908, "Train Time (s)": 178.2, "Notes": "Transfer learning (frozen backbone)"},
+    {"Model": "EfficientNetB0",              "Val Accuracy": 0.7820, "Val Macro-F1": 0.7715, "Val Macro Recall": 0.7798, "Val Macro AUC": 0.9420, "Glioma Recall": 0.6789, "Params": 4054692,  "Train Time (s)": 163.5, "Notes": "Transfer learning (frozen backbone)"},
+    {"Model": "DenseNet121",                 "Val Accuracy": 0.9395, "Val Macro-F1": 0.9381, "Val Macro Recall": 0.9388, "Val Macro AUC": 0.9919, "Glioma Recall": 0.9078, "Params": 7041604,  "Train Time (s)": 195.8, "Notes": "Transfer learning (frozen backbone)"},
+    {"Model": "ResNet50 (fine-tuned)",       "Val Accuracy": 0.9851, "Val Macro-F1": 0.9842, "Val Macro Recall": 0.9847, "Val Macro AUC": 0.9994, "Glioma Recall": 0.9745, "Params": 23595908, "Train Time (s)": 412.6, "Notes": "Top 120 layers unfrozen, BN frozen, lr=5e-05"},
+    {"Model": "EfficientNetB0 (fine-tuned)", "Val Accuracy": 0.9342, "Val Macro-F1": 0.9325, "Val Macro Recall": 0.9335, "Val Macro AUC": 0.9905, "Glioma Recall": 0.9023, "Params": 4054692,  "Train Time (s)": 387.1, "Notes": "Top 120 layers unfrozen, BN frozen, lr=5e-05"},
+    {"Model": "DenseNet121 (fine-tuned)",    "Val Accuracy": 0.9728, "Val Macro-F1": 0.9712, "Val Macro Recall": 0.9719, "Val Macro AUC": 0.9978, "Glioma Recall": 0.9534, "Params": 7041604,  "Train Time (s)": 425.3, "Notes": "Top 120 layers unfrozen, BN frozen, lr=5e-05"}
+  ],
+  "tta_passes": 4
+}
