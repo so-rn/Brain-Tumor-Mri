@@ -71,3 +71,7 @@ retrain. The trained model needed to run the app is already in the repo.
 
 Research and educational use only. This is **not** a medical device and must not be
 used for real diagnosis.
+
+## License
+
+Released under the [MIT License](LICENSE) © 2026 Soraan Mahmoudi.
