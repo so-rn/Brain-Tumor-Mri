@@ -1,6 +1,10 @@
 streamlit>=1.32
-tensorflow>=2.15
+# tensorflow-cpu: smaller than full tensorflow (no CUDA wheels) so it fits
+# Streamlit Community Cloud resource limits. Capped <2.20 because newer
+# builds only ship wheels for Python >=3.13 and Cloud's default is 3.12.
+# NOTE: requires Python <=3.12 on the deploy target (see runtime.txt).
+tensorflow-cpu>=2.16,<2.20
 scikit-learn
-numpy
+numpy<2.2
 pillow
 matplotlib
