@@ -1,0 +1,22 @@
+# Models & checkpoints (too large for git)
+*.keras
+*.h5
+*.weights.h5
+
+# Datasets / archives
+*.zip
+Training/
+Testing/
+brain_tumor*/
+*-dataset/
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# OS / editor
+.DS_Store
+*.bak
