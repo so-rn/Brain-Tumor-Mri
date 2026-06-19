@@ -54,6 +54,32 @@ INDIGO = "#10b981"   # mint-emerald
 VIOLET = "#059669"   # emerald
 PINK = "#0d9488"     # teal
 
+# ── risk ramp: green → yellow → orange → red, indexed by a 0..1 "danger" score ──
+# A confidently-detected tumor reads red; a confident "notumor" stays green.
+_SEVERITY_STOPS = [
+    (0.00, (22, 163, 74)),    # green  #16a34a  (safe)
+    (0.40, (234, 179, 8)),    # yellow #eab308
+    (0.70, (249, 115, 22)),   # orange #f97316
+    (1.00, (239, 68, 68)),    # red    #ef4444  (dangerous)
+]
+
+
+def severity_color(score):
+    """Map a 0..1 danger score to a hex colour along green→yellow→orange→red."""
+    score = float(np.clip(score, 0.0, 1.0))
+    for (s0, c0), (s1, c1) in zip(_SEVERITY_STOPS, _SEVERITY_STOPS[1:]):
+        if score <= s1:
+            t = 0.0 if s1 == s0 else (score - s0) / (s1 - s0)
+            rgb = [round(a + (b - a) * t) for a, b in zip(c0, c1)]
+            return f"#{rgb[0]:02x}{rgb[1]:02x}{rgb[2]:02x}"
+    return "#ef4444"
+
+
+def danger_score(cls, prob):
+    """Danger of a class: tumor classes are dangerous at high prob; 'notumor'
+    is dangerous when a tumor is likely instead (= 1 - prob)."""
+    return (1.0 - prob) if cls == "notumor" else prob
+
 st.set_page_config(
     page_title="PixelMind — Brain MRI Atlas",
     page_icon="🧠",
@@ -615,6 +641,12 @@ def render_diagnose():
     probs = model.predict(resnet_preprocess(np.copy(batch)), verbose=0)[0]
     pred_idx = int(np.argmax(probs)); pred_cls = CLASSES[pred_idx]; conf = float(probs[pred_idx])
 
+    # Risk colour for the prediction: green (safe) → red (dangerous tumor).
+    pred_danger = danger_score(pred_cls, conf)
+    pred_color = severity_color(pred_danger)
+    risk_label = ("Low" if pred_danger < 0.40 else
+                  "Moderate" if pred_danger < 0.70 else "High")
+
     st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
     c1, c2 = st.columns([1, 1.15], gap="medium")
     with c1:
@@ -622,18 +654,24 @@ def render_diagnose():
             st.image(pil_img, use_container_width=True)
     with c2:
         st.markdown(
-            f"<div class='pred'><div class='pred-eyebrow'>Predicted class</div>"
-            f"<div class='pred-value'>{pred_cls.upper()}</div>"
+            f"<div class='pred' style='border-left:5px solid {pred_color};'>"
+            f"<div class='pred-eyebrow'>Predicted class</div>"
+            f"<div class='pred-value' style='-webkit-text-fill-color:{pred_color};"
+            f"color:{pred_color};background:none;'>{pred_cls.upper()}</div>"
             f"<div class='pred-desc'>{CLASS_INFO[pred_cls]}</div>"
-            f"<div class='pred-chip'>Confidence · {conf*100:.2f}%</div></div>",
+            f"<div class='pred-chip' style='background:{pred_color}1a;"
+            f"border-color:{pred_color}55;color:{pred_color};'>"
+            f"Confidence · {conf*100:.2f}%　·　Risk · {risk_label}</div></div>",
             unsafe_allow_html=True,
         )
         bars = "<div class='pb'>"
         for i in np.argsort(probs)[::-1]:
             pct = probs[i] * 100
+            bar_color = severity_color(danger_score(CLASSES[i], float(probs[i])))
             bars += (f"<div class='pb-row'><span class='nm'>{CLASSES[i]}</span>"
                      f"<span class='vl'>{pct:.2f}%</span></div>"
-                     f"<div class='pb-track'><div class='pb-fill' style='width:{pct:.2f}%'></div></div>")
+                     f"<div class='pb-track'><div class='pb-fill' "
+                     f"style='width:{pct:.2f}%;background:{bar_color};'></div></div>")
         bars += "</div>"
         st.markdown(bars, unsafe_allow_html=True)
 
