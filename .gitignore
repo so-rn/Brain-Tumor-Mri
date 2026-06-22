@@ -14,8 +14,9 @@ brain_tumor*/
 # Run artifacts
 *.log
 
-# Local tooling / editor scratch
-.claude/
+# Local tooling / editor scratch (keep shared .claude config, ignore personal/local)
+.claude/settings.local.json
+.claude/*.local.*
 
 # Python
 __pycache__/
