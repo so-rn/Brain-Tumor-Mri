@@ -79,4 +79,4 @@ used for real diagnosis.
 
 ## License
 
-Released under the [MIT License](LICENSE) © 2026 Soraan Mahmoudi.
+Released under the [MIT License](LICENSE) © 2026 Soraan .
